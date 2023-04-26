@@ -1,7 +1,10 @@
 
 # This is a fork from the original that seems to not be maintained atm
+
 I made some general improvements here but I plan to eventually try to get it merged back to the original which can be found here:
 https://github.com/PetitTournesol/Edgeware
+
+
 # Edgeware
 **First and foremost as a disclaimer: this is NOT actually malicious software. It is intended for entertainment purposes only. Any and all damage caused to your files or computer is _YOUR_ responsibility. If you're worried about losing things, BACK THEM UP.**
 
@@ -11,14 +14,21 @@ If you get error "TypeError: unsupported operand type(s) for |: 'type' and 'type
 This update mainly focuses on allowing me to game while porn plays in the background
 
 •*Added a "Gaming" config as a new default*
+
 •*Added a new feature that allows your clicks to pass through the popups if they have an opacity lower than 100%*
+
 •*Added a typing prompt when user tries to panic before timer expires*
+
 •*Lowkey mode now reuses the same frame for images and gifs, this allows your active window (game) to stay in focus*
 *(I haven't figured out videos yet so disable it for now)*
 
+
 •*Fixed panic buttons/shortcuts ignoring the timer setting in some cases*
+
 •*Fixed timer minutes setting not working properly*
+
 •*Fixed discord presence not always showing, it now also updates every 10 seconds so you can't hide it by starting a game after app starts.*
+
 
 (Small) 2.4.2 Update
 
