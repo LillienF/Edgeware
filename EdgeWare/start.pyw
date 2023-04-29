@@ -189,6 +189,13 @@ except:
     pip_install('bs4')
     from bs4 import BeautifulSoup
 
+try:
+    import win32gui
+except:
+    logging.warning('failed to import win32gui module')
+    pip_install('pywin32')
+    import win32gui
+
 #end non-standard imports
 
 DESKTOP_PATH = os.path.join(os.environ['USERPROFILE'], 'Desktop') #desktop path for making shortcuts
