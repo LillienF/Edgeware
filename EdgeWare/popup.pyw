@@ -3,6 +3,7 @@ import os
 import sys
 import random as rand
 import tkinter as tk
+import numpy as np
 import time
 import json
 import pathlib
@@ -254,7 +255,7 @@ def resize(img:Image.Image, screen_width, screen_height) -> Image.Image:
     size_source = max(img.width, img.height) / min(screen_width, screen_height)
     size_target = rand.randint(30, 70) / 100 if not LOWKEY_MODE else rand.randint(20, 50) / 100
     resize_factor = size_target / size_source
-    return img.resize((int(img.width * resize_factor), int(img.height * resize_factor)), Image.ANTIALIAS)
+    return img.resize((int(img.width * resize_factor), int(img.height * resize_factor)), Image.LANCZOS)
 
 
 def GetRandomImage():
@@ -278,10 +279,14 @@ def run():
 
     while item.split('.')[-1].lower() == 'ini':
         item = arr[rand.randrange(len(arr))]
-    if len(SYS_ARGS) >= 1 and SYS_ARGS[0] != '%RAND%': 
-        item = rand.choice(os.listdir(os.path.join(PATH, 'resource', 'vid')))
     if len(SYS_ARGS) >= 1 and SYS_ARGS[0] == '-video':
-        video_mode = True
+        vidArr = os.listdir(os.path.join(PATH, 'resource', 'vid'))
+        if len(vidArr) > 0:
+            item = rand.choice(vidArr)
+            video_mode = True
+        else:
+            print('no videos found, defaulting to image')
+            return
     
     if not video_mode:
         while True:

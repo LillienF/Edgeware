@@ -3,3 +3,4 @@ EdgeWare/resource/
 EdgeWare/config.cfg
 EdgeWare/hid_time.dat
 EdgeWare/pass.hash
+.vscode/launch.json

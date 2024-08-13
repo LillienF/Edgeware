@@ -132,6 +132,13 @@ except:
     import requests
 
 try:
+    import olefile
+except:
+    logging.warning('failed to import olefile module')
+    pip_install('olefile')
+    import olefile
+
+try:
     import PIL
     from PIL import Image
 except:
@@ -174,7 +181,7 @@ try:
     import moviepy
 except:
     logging.warning('failed to import moviepy module')
-    pip_install('moviepy')
+    pip_install('git+https://github.com/Zulko/moviepy.git@master')
 
 try:
     import sounddevice
@@ -252,7 +259,7 @@ MITOSIS_MODE = int(settings['mitosisMode']) == 1
 LOWKEY_MODE = int(settings['lkToggle']) == 1
 
 TIMER_MODE = int(settings['timerMode']) == 1
-TIMER_SETUP_TIME = int(settings['timerSetupTime']) == 1
+TIMER_SETUP_TIME = int(settings['timerSetupTime'])
 
 DRIVE_PATH = settings['drivePath']
 
@@ -469,18 +476,9 @@ class TrayHandler:
     def try_panic(self):
         logging.info('attempting tray panic')
         if not PANIC_DISABLED:
-            if self.timer_mode:
-                hashObjPath = os.path.join(PATH, 'pass.hash')
-                timeObjPath = os.path.join(PATH, 'hid_time.dat')
-                if os.path.exists(timeObjPath):
-                    subprocess.call('pythonw prompt.pyw timerEarly')
-                    # os.system(r'python prompt.pyw timerEarly')
-                else:
-                    os.startfile('panic.pyw')
-            else:
-                logging.warning('panic initiated from tray command')
-                self.tray_icon.stop()
-                os.startfile('panic.pyw')
+            logging.warning('panic initiated from tray command')
+            # self.tray_icon.stop()
+            os.startfile('panic.pyw')
 
     def move_to_tray(self):
         self.tray_icon.run(tray_setup)
@@ -681,6 +679,8 @@ def annoyance():
         roll_for_initiative()
         if not MITOSIS_LIVE and (MITOSIS_MODE or LOWKEY_MODE) and HAS_IMAGES:
             os.startfile('popup.pyw')
+            if AUDIO_CHANCE:
+                thread.Thread(target=play_audio).start()
             MITOSIS_LIVE = True
         if FILL_MODE and LIVE_FILL_THREADS < MAX_FILL_THREADS:
             thread.Thread(target=fill_drive).start()
@@ -710,7 +710,7 @@ def roll_for_initiative():
         except Exception as e:
             messagebox.showerror('Popup Error', 'Failed to start popup.\n[' + str(e) + ']')
             logging.critical(f'failed to start popup.pyw\n\tReason: {e}')
-    if do_roll(AUDIO_CHANCE) and not PLAYING_AUDIO and AUDIO:
+    if (not (PLAYING_AUDIO or LOWKEY_MODE) and do_roll(AUDIO_CHANCE)) and AUDIO:
         try:
             thread.Thread(target=play_audio).start()
         except:
@@ -773,6 +773,9 @@ def play_audio():
     playsound.playsound(AUDIO[rand.randrange(len(AUDIO))])
     PLAYING_AUDIO = False
     logging.info('finished audio playback')
+    if LOWKEY_MODE:
+        thread.Thread(target=play_audio).start()
+
 
 #fills drive with copies of images from /resource/img/
 #   only targets User folders; none of that annoying elsaware shit where it fills folders you'll never see
@@ -829,4 +832,10 @@ def replace_images():
     #never turns off threadlive variable because it should only need to do this once
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        if not os.path.exists(os.path.join(PATH, 'logs')):
+            os.mkdir(os.path.join(PATH, 'logs'))
+        logging.basicConfig(filename=os.path.join(PATH, 'logs', time.asctime().replace(' ', '_').replace(':', '-') + '-start.txt'), format='%(levelname)s:%(message)s', level=logging.DEBUG)
+        logging.fatal(f'failed to start start.pyw\n{e}')
